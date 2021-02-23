@@ -1,3 +1,4 @@
+%%% feedback from Jonathan
 %% FIRST PART OF THE ICN INVASIVE ELECTROPHYSIOLOGY TUTORIAL 
 % This tutorial requires the following repositories: 
 % spm: https://github.com/spm/spm12
@@ -13,7 +14,7 @@ clear all, close all, clc
 %% SET FOLDERS AND PATH
 % this is where you are going to work, choose any folder of your liking, we
 % will create some files here:
-root = 'E:\OneDrive - Charite - Universitaetsmedizin Berlin\Data - Interventional Cognitive Neuromodulation\Tutorials\MATLAB_Electrophysiology_Import';
+root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_Tutorial\Tutorial_1';
 % let's create the directory you specified as root and move there
 if ~exist(root,'dir')
     mkdir(root)
@@ -22,8 +23,8 @@ cd(root)
 
 % Now add the required code to your path this is where your code 
 % repositories for wjn_toolbox and SPM are.
-addpath(fullfile('C:\code\','wjn_toolbox'))
-addpath(fullfile('C:\code\','spm12')) 
+% addpath(fullfile('C:\code\','wjn_toolbox'))
+% addpath(fullfile('C:\code\','spm12')) 
 % SPM needs to be initialized to include FieldTrip folders in path:
 % Do not initialize FieldTrip yet, as MatLab will get confused!
 spm('defaults','eeg')
@@ -56,8 +57,9 @@ for a = 1:nsignals
     cfg.n2.bpfreq   = [randi(5)+20 randi(5)+30];
         cfg.noise.ampl = randi(50);
     data = ft_freqsimulation(cfg);
-    X = pinknoise(cfg.fsample*cfg.trllen)'
-    data.trial{1}(1,:) = data.trial{1}(1,:) + X
+    %X = pinknoise(cfg.fsample*cfg.trllen)' %%%the pink noise will probably come
+    %from other toolbox, e.g. audiotoolbox? 
+    data.trial{1}(1,:) = data.trial{1}(1,:) %+ X
     raw_signals(a,:) = data.trial{1}(1,:);
 end
 
@@ -137,12 +139,12 @@ disp(info.Properties.VariableNames')
 % channel_ and a number. I have written a very handy string indicator that 
 % I often use. This can be used to identify the relevant fields in the 
 % table:
-channel_indices = ci('channels',info.Properties.VariableNames);
+channel_indices = ci('channels',info.Properties.VariableNames); %%%the indices are all +1
 channel_names = table2cell(info(:,channel_indices)); % note that we are converting from Table to cell for convenience later on
 
 % So we can look at the data now with the most important aspects in place
 figure
-wjn_plot_raw_signals(fsample,rawdata,channel_names)
+wjn_plot_raw_signals(fsample,rawdata,channel_names) %%%gives back "line line line"
 
 % Let's also extract that text info field from the table:
 additional_info = info.info;
@@ -233,7 +235,9 @@ disp(chanlabels{1})
 % set : MT (Medtronic). Medtronic is the only manufacturer left by whom 4
 % contact DBS electrodes would be implanted. So this was guessed correct. 
 % If you look closely at the info text, there is a 3389 hidden in there.
-% That is the traditional Medtronic DBS lead. 
+% That is the traditional Medtronic DBS lead.
+%%% I think Richard already addressed that, that the MT vs U is a bit
+%%% confusing
 
 
 % These things really depend on specific likelihoods or conventions, this
@@ -284,7 +288,9 @@ wjn_plot_raw_signals(D.time,D(:,:),D.chanlabels)
 % Before we would want to analyze the data, we should consider the
 % reference used.
 % All data were referenced to an LFP contact, so we should rereference
-% Optimally, rereferencing is conducted to create local bipolar
+% Optimally, rereferencing is conducted to create local bipolar %%% for a
+% tutorial I would suggest to expand this section perhaps? Why exactly to we want
+% local bipolar derivatices? For me, that is not very intuitive...
 % derivatives. This should be the first preprocessing step that you do. It
 % requires some understanding of what is going on. Best is to start with 
 % a new data array where you add your bipolar derivations. 
@@ -292,8 +298,9 @@ wjn_plot_raw_signals(D.time,D(:,:),D.chanlabels)
 % Let's do that for the adjacent channels of the right LFP electrode.
 % We can use the help of the channel indicator here:
 index_lfpr = ci('R_STN',D.chanlabels);
-lfp_r_bp= D(index_lfpr(1:end-1),:)-D(index_lfpr(2:end),:);
-% we can write out the channel names by hand:
+lfp_r_bp= D(index_lfpr(1:end-1),:)-D(index_lfpr(2:end),:); %%%this is the referencing, but I did not quite understand yet why this is the solution in how to do it
+% we can write out the channel names by hand: %%%this MT vs U is a bit
+% confusing for me
 channels_lfp_right = {'LFP_R_01_STN_MT','LFP_R_12_STN_MT','LFP_R_23_STN_MT'};
 % now we have three channels from adjacent contact pairs 
 % For the right side it is a little more complicated. The reference was
@@ -306,7 +313,7 @@ channels_lfp_left = {'LFP_L_01_STN_MT','LFP_L_12_STN_MT','LFP_L_23_STN_MT'};
 % Next, we will rereference ECOG channels. ECOG is probably least affected 
 % because of the high amplitude signals. Nevertheless, we can improve the 
 % spatial specificity of our analyses. For ECOG, two potential referencing 
-% schemes are the most useful, which we will both perform here:s
+% schemes are the most useful, which we will both perform here:
 % 1) is common average referencing (CAR):
 index_ecog = ci('ECOG',D.chanlabels);
 ecog_car = D(index_ecog,:)-nanmean(D(index_ecog,:),1);
@@ -338,7 +345,8 @@ D=wjn_add_channels(D.fullfile,derivative_data,derivative_chanlabels)
 D.nchannels
 D.chanlabels'
 
-% Now we can move forward, e.g. with filtering and preprocessing: 
+% Now we can move forward, e.g. with filtering and preprocessing: %%%what
+% is happening in this step exactly? I got lost here for this moment...
 Df=wjn_filter(D.fullfile,1,'high');
 Dff=wjn_filter(Df.fullfile,[48 52],'stop');Df.delete;
 D=wjn_filter(Dff.fullfile,98,'low');Dff.delete;
@@ -370,6 +378,8 @@ subplot(4,1,[3 4])
 surface(Dtf.time,Dtf.frequencies,squeeze(log(Dtf(1,:,:,1))),'edgecolor','none')
 title('Time Frequency Analysis');view(-50,70);caxis([7 15]);zlim([5 20]);
 xlabel('Time [s]');ylabel('Frequency [Hz]');zlabel('PSD');figone(25,20)
+%%% this section did not really run for me as I think it is meant to be. I
+%%% posted a screenshot in Teams Tutorial
 %% CONVERSION TO BIDS
 % Now as part of the INF team, I will also take the opportunity to promote
 % the use of the BIDS standard (https://bids-specification.readthedocs.io/en/stable/)
@@ -377,7 +387,8 @@ xlabel('Time [s]');ylabel('Frequency [Hz]');zlabel('PSD');figone(25,20)
 % For that we need some additional code from the original FieldTrip toolbox
 clear all, close all, clc
 load('fieldtrip_sub-001_MedOff_StimOff_16-Dec-1985')
-addpath C:\code\fieldtrip\  
+%addpath C:\code\fieldtrip\  %%%some warmings here because spm12 is still
+%in our path
 
 % let's define some general settings
 cfg = [];
@@ -386,7 +397,8 @@ cfg.datatype  = 'ieeg';
 cfg.bidsroot  = 'bids';
 cfg.sub       = '001'; % subject identifier
 cfg.task      = 'Rest';
-cfg.ses       = 'MedOff';
+cfg.ses       = 'EphysMedOff'; %%% small change here
+cfg.acq       = 'StimOff'; %%% small addition here
 
 % Info to build your participants table using some of the info provided:
 disp(data.info.source_info)
