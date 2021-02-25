@@ -1,7 +1,7 @@
 # ICN electrophysiology tutorial 1
 
 ### what you will learn:
-Ephys tutorial 1 show on an entry-level how ECOG and LFP data are organized. Topics covered are:
+Ephys tutorial 1 shows on an entry-level how ECOG and LFP data are organized. Topics covered are:
 * how explore data you recieve
 * rearrange data in readable format
 * plot channels
