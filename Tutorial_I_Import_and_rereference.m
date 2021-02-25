@@ -12,7 +12,7 @@ clear all, close all, clc
 %% SET FOLDERS AND PATH
 % this is where you are going to work, choose any folder of your liking, we
 % will create some files here:
-root = 'G:\EphysTutorial'; % This needs to be adapted!
+root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_Tutorial\Tutorial_1b'; % This needs to be adapted!
 % let's create the directory you specified as root and move there
 if ~exist(root,'dir')
     mkdir(root)
@@ -22,8 +22,8 @@ cd(root)
 
 % Now add the required code to your path this is where your code 
 % repositories for wjn_toolbox and SPM are.
-addpath('G:\EphysTutorial\code\wjn_toolbox') % This needs to be adapted
-addpath('G:\EphysTutorial\code\spm12') % This needs to be adapted
+%addpath('G:\EphysTutorial\code\wjn_toolbox') % This needs to be adapted
+%addpath('G:\EphysTutorial\code\spm12') % This needs to be adapted
 % SPM needs to be initialized to include FieldTrip folders in path:
 % Do not initialize FieldTrip yet, as MatLab will get confused!
 spm('defaults','eeg')
@@ -101,12 +101,12 @@ figure
 subplot(1,2,1)
 % E.g. if sampling rate was believed to be 2 kHz...
 false_sampling_rate1 = 2000;
-wjn_plot_raw_signals(2000,rawdata)
+wjn_plot_raw_signals(2000,rawdata);
 title(['Sampling rate: ' num2str(false_sampling_rate1)])
 subplot(1,2,2)
 % ... this is different when compared to 50 Hz
 false_sampling_rate2 = 50;
-wjn_plot_raw_signals(false_sampling_rate2,rawdata)
+wjn_plot_raw_signals(false_sampling_rate2,rawdata);
 title(['Sampling rate: ' num2str(false_sampling_rate2)])
 
 %Conclusion: having a false sampling rate can affect the x-axis (time axis) enormously,
@@ -327,10 +327,10 @@ channels_lfp_right = {'LFP_R_01_STN_MT','LFP_R_12_STN_MT','LFP_R_23_STN_MT'};
 % For the right side it is a little more complicated. The reference was
 D.info.reference
 index_lfpl = ci('L_STN',D.chanlabels);
-% so that means LFP_03_L_STN_MT is already hardware bipolar:
+% so that means LFP_3_L_STN_MT is already hardware bipolar:
 lfp_l_bp = [D(index_lfpl(1:2),:)-D(index_lfpl(2:3),:);D(index_lfpl(3),:)];
 channels_lfp_left = {'LFP_L_01_STN_MT','LFP_L_12_STN_MT','LFP_L_23_STN_MT'};
-% note: this means LFP_03_L_STN_MT equals LFP_L_23_STN_MT, so no substraction
+% note: this means LFP_3_L_STN_MT equals LFP_L_23_STN_MT, so no substraction
 % was needed for this channel to become the referenced signal.
 
 % Next, we will rereference ECOG channels. ECOG is probably least affected 
